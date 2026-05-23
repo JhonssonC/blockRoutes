@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_block_routes_route_user,block_routes.route.user,model_block_routes_route,base.group_user,1,0,0,0
+access_block_routes_route_admin,block_routes.route.admin,model_block_routes_route,group_block_routes_admin,1,1,1,1
+access_block_routes_blocked_user,block_routes.blocked.user,model_block_routes_blocked,base.group_user,1,0,0,0
+access_block_routes_blocked_admin,block_routes.blocked.admin,model_block_routes_blocked,group_block_routes_admin,1,1,1,1

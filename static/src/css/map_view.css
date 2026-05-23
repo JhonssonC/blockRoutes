@@ -1,0 +1,24 @@
+.o_block_routes_map_container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.o_map_overlay {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    min-width: 250px;
+}
+
+.o_map_overlay h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}

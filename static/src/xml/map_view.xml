@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="block_routes.map_view" owl="1">
+        <div class="o_block_routes_map_container">
+            <div id="block_routes_map" style="width: 100%; height: 100vh;"></div>
+            
+            <div class="o_map_overlay">
+                <h3>Estado de Ruta</h3>
+                <div t-if="state.loading">
+                    <i class="fa fa-spinner fa-spin"></i> Cargando rutas...
+                </div>
+                <div t-else="">
+                    <p><strong>Ubicación:</strong> <span t-esc="state.locationStatus"/></p>
+                    <div t-if="state.currentRoute" t-att-class="state.currentRouteBlocked ? 'alert alert-danger' : 'alert alert-success'">
+                        <strong>Ruta Actual:</strong> <t t-esc="state.currentRoute"/><br/>
+                        <span t-if="state.currentRouteBlocked">
+                            <i class="fa fa-exclamation-triangle"></i> ¡ESTA RUTA ESTÁ BLOQUEADA!<br/>
+                            <small t-esc="state.blockReason"></small>
+                        </span>
+                        <span t-else="">
+                            <i class="fa fa-check-circle"></i> Vía libre
+                        </span>
+                    </div>
+                    <div t-else="" class="alert alert-info">
+                        No te encuentras en ninguna ruta mapeada.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

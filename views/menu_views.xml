@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Acción de Cliente OWL -->
+    <record id="action_block_routes_map_viewer" model="ir.actions.client">
+        <field name="name">Visor de Rutas</field>
+        <field name="tag">block_routes.map_view</field>
+    </record>
+
+    <!-- Menús -->
+    <menuitem id="menu_block_routes_root" name="Visor de Rutas" sequence="10" web_icon="base,static/description/icon.png"/>
+    
+    <menuitem id="menu_block_routes_map" name="Mapa" parent="menu_block_routes_root" action="action_block_routes_map_viewer" sequence="1"/>
+    <menuitem id="menu_block_routes_config" name="Configuración" parent="menu_block_routes_root" sequence="10" groups="group_block_routes_admin"/>
+    
+    <menuitem id="menu_block_routes_blocked_list" name="Bloqueos Activos" parent="menu_block_routes_config" action="action_block_routes_blocked" sequence="1"/>
+    <menuitem id="menu_block_routes_route_list" name="Rutas Registradas" parent="menu_block_routes_config" action="action_block_routes_route" sequence="2"/>
+</odoo>

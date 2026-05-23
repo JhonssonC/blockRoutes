@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <!-- Grupo de Administradores del Visor de Rutas -->
+        <record id="group_block_routes_admin" model="res.groups">
+            <field name="name">Administrador de Rutas Bloqueadas</field>
+            <field name="category_id" ref="base.module_category_operations"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- Regla de Registro: Rutas visibles según unidad de negocio (Opcional, si está vacío se ven todas) -->
+        <!-- En este caso, haremos que vean todas por si acaso, o solo las de su unidad de negocio si coincide -->
+        <!-- Como la vista JS filtra o muestra, la regla de acceso puede ser permisiva -->
+        <record id="rule_block_routes_route_bu" model="ir.rule">
+            <field name="name">Rutas por Unidad de Negocio de la Empresa</field>
+            <field name="model_id" ref="model_block_routes_route"/>
+            <field name="domain_force">['|', ('business_unit', '=', False), ('business_unit', '=', user.company_id.business_unit)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+    </data>
+</odoo>
