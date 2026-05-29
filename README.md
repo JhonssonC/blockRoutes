@@ -1,6 +1,6 @@
 # Blocked Routes Map Viewer (`blockRoutes`)
 
-Módulo avanzado de **Odoo 18** diseñado para el **Visor de Rutas de Ecuador** y la gestión espacializada de **rutas bloqueadas**. Este módulo automatiza la importación de datos cartográficos (Shapefiles) y calendarios de lecturas/emisiones (archivos Excel de facturación), previniendo que los operarios en campo tomen lecturas en sectores bloqueados gracias a un mapa interactivo con geolocalización en tiempo real.
+Módulo avanzado de **Odoo 18** diseñado para el **Visor de Rutas de Ecuador** y la gestión espacializada de **rutas bloqueadas**. Este módulo automatiza la importación de datos cartográficos (Shapefiles) y calendarios de lecturas/emisiones (archivos Excel de facturación), previniendo que unidades de atencion levanten actividades a ejecutar en sectores bloqueados gracias a un mapa interactivo con geolocalización en tiempo real.
 
 ---
 
