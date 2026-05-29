@@ -1,0 +1,53 @@
+# ==========================================
+# GITIGNORE PARA ODOO ADDON: blockRoutes
+# ==========================================
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# --- Odoo Específico ---
+*.log
+local/
+*import_logs/
+
+# --- IDEs y Editores ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+
+# --- Archivos de Sistema ---
+.DS_Store
+Thumbs.db
+
+# --- Datos del Proyecto (Privados) ---
+# Ignorar archivos Shapefile de datos
+/data/shapes/*
+!/data/shapes/.gitkeep
+
+# Ignorar archivos Excel de rutas bloqueadas
+/data/rutasBloqueadas/*
+!/data/rutasBloqueadas/.gitkeep

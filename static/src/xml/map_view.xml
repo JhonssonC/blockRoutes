@@ -7,7 +7,7 @@
             <div class="o_map_overlay">
                 <h3>Estado de Ruta</h3>
                 <div t-if="state.loading">
-                    <i class="fa fa-spinner fa-spin"></i> Cargando rutas...
+                    <i class="fa fa-spinner fa-spin"></i> Esperando rutas...
                 </div>
                 <div t-else="">
                     <p><strong>Ubicación:</strong> <span t-esc="state.locationStatus"/></p>

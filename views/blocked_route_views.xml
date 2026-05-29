@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- View para block_routes.route -->
-    <record id="view_block_routes_route_tree" model="ir.ui.view">
-        <field name="name">block_routes.route.tree</field>
+    <record id="view_block_routes_route_list" model="ir.ui.view">
+        <field name="name">block_routes.route.list</field>
         <field name="model">block_routes.route</field>
         <field name="arch" type="xml">
-            <tree string="Rutas">
+            <list string="Rutas">
                 <field name="name"/>
                 <field name="business_unit"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -31,19 +31,23 @@
     <record id="action_block_routes_route" model="ir.actions.act_window">
         <field name="name">Rutas</field>
         <field name="res_model">block_routes.route</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- View para block_routes.blocked -->
-    <record id="view_block_routes_blocked_tree" model="ir.ui.view">
-        <field name="name">block_routes.blocked.tree</field>
+    <record id="view_block_routes_blocked_list" model="ir.ui.view">
+        <field name="name">block_routes.blocked.list</field>
         <field name="model">block_routes.blocked</field>
         <field name="arch" type="xml">
-            <tree string="Rutas Bloqueadas">
+            <list string="Rutas Bloqueadas">
+                <header>
+                    <button name="%(action_block_routes_blocked_import_wizard)d" string="Importar desde Excel" type="action" class="btn-primary" icon="fa-upload"/>
+                </header>
                 <field name="route_id"/>
                 <field name="reason"/>
-                <field name="date_blocked"/>
-            </tree>
+                <field name="date_start"/>
+                <field name="date_end"/>
+            </list>
         </field>
     </record>
 
@@ -54,9 +58,14 @@
             <form string="Ruta Bloqueada">
                 <sheet>
                     <group>
-                        <field name="route_id"/>
-                        <field name="reason"/>
-                        <field name="date_blocked"/>
+                        <group>
+                            <field name="route_id"/>
+                            <field name="reason"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
@@ -66,6 +75,6 @@
     <record id="action_block_routes_blocked" model="ir.actions.act_window">
         <field name="name">Rutas Bloqueadas</field>
         <field name="res_model">block_routes.blocked</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>
