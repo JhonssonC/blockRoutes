@@ -266,6 +266,18 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
     if module_path:
         full_path = os.path.join(module_path, directory_path)
         
+    # Cargar el mapeo de rutas resueltas desde JSON
+    route_mapping = {}
+    if module_path:
+        mapping_path = os.path.join(module_path, 'tools', 'route_mapping.json')
+        if os.path.exists(mapping_path):
+            try:
+                with open(mapping_path, 'r', encoding='utf-8') as f:
+                    route_mapping = json.load(f)
+                _logger.info("Se cargó el mapeo estático de rutas con %s registros desde JSON.", len(route_mapping))
+            except Exception as e:
+                _logger.warning("No se pudo cargar el archivo de mapeo de rutas route_mapping.json: %s", str(e))
+        
     if not os.path.exists(full_path):
         _logger.error("El directorio de shapefiles no existe: %s", full_path)
         return False
@@ -407,8 +419,16 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                     break
                     
             if not matched_route_id:
-                # Si no se encuentra secuencia dentro, generamos uno por defecto
-                matched_route_id = f"Ruta_Desconocida_{created_count}"
+                # Intentar resolver usando el mapeo estático desde Geoportal
+                rec = sr.record.as_dict()
+                globalid = str(rec.get('GLOBALID', '')).strip()
+                if globalid and globalid in route_mapping:
+                    matched_route_id = route_mapping[globalid]
+                    _logger.info("Ruta con GLOBALID %s resuelta a %s mediante mapeo estático.", globalid, matched_route_id)
+                else:
+                    # Si no se encuentra secuencia dentro ni mapeo, no la subimos (saltamos la ruta desconocida)
+                    _logger.warning("Ruta con GLOBALID %s no pudo ser resuelta. Se omite por ser desconocida.", globalid)
+                    continue
                 
             # Crear o actualizar en Odoo
             existing = Route.search([('name', '=', matched_route_id)], limit=1)
@@ -424,6 +444,28 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                     'business_unit': business_unit
                 })
             created_count += 1
+            
+        # FASE 2: Importar rutas faltantes en vacíos (gaps) desde las geometrías autogeneradas
+        gap_geoms_path = os.path.join(module_path, 'tools', 'gap_routes_geometries.json')
+        if os.path.exists(gap_geoms_path):
+            try:
+                with open(gap_geoms_path, 'r', encoding='utf-8') as f:
+                    gap_geoms = json.load(f)
+                _logger.info("Cargando geometrías autogeneradas para rutas en vacíos (gaps): %s registradas.", len(gap_geoms))
+                gap_created = 0
+                for route_name, geom in gap_geoms.items():
+                    existing = Route.search([('name', '=', route_name)], limit=1)
+                    if not existing:
+                        Route.create({
+                            'name': route_name,
+                            'geojson': json.dumps(geom),
+                            'business_unit': business_unit
+                        })
+                        gap_created += 1
+                _logger.info("Se crearon %s nuevas rutas en vacíos (gaps) que no tenían polígono.", gap_created)
+                created_count += gap_created
+            except Exception as e:
+                _logger.error("Error al procesar geometrías autogeneradas de vacíos (gaps): %s", str(e))
     except Exception as e:
         _logger.error("Error al procesar el archivo de Rutas: %s", str(e))
         return False

@@ -63,7 +63,11 @@ export class MapViewer extends Component {
                     const start = new Date(br.date_start.replace(' ', 'T') + 'Z');
                     const end = new Date(br.date_end.replace(' ', 'T') + 'Z');
                     if (now >= start && now <= end) {
-                        this.blockedRoutesMap[br.route_id[0]] = br.reason || 'Bloqueado';
+                        this.blockedRoutesMap[br.route_id[0]] = {
+                            reason: br.reason || 'Bloqueado',
+                            date_start: br.date_start,
+                            date_end: br.date_end
+                        };
                     }
                 }
             });
@@ -102,15 +106,25 @@ export class MapViewer extends Component {
                     fillOpacity: 0.25
                 };
                 
+                let popupContent = `<b>${route.name}</b><br/>`;
+                if (isBlocked) {
+                    const blockInfo = this.blockedRoutesMap[route.id];
+                    popupContent += `<b>BLOQUEADA:</b> ${blockInfo.reason}<br/>`;
+                    popupContent += `<b>Desde:</b> ${blockInfo.date_start}<br/>`;
+                    popupContent += `<b>Hasta:</b> ${blockInfo.date_end}`;
+                } else {
+                    popupContent += 'Libre';
+                }
+                
                 const layer = L.geoJSON(geojsonData, {
                     style: style
-                }).bindPopup(`<b>${route.name}</b><br/>${isBlocked ? 'BLOQUEADA: ' + this.blockedRoutesMap[route.id] : 'Libre'}`);
+                }).bindPopup(popupContent);
                 
                 // Keep reference for PIP (Point In Polygon) checking
                 layer.routeId = route.id;
                 layer.routeName = route.name;
                 layer.isBlocked = isBlocked;
-                layer.blockReason = isBlocked ? this.blockedRoutesMap[route.id] : '';
+                layer.blockReason = isBlocked ? this.blockedRoutesMap[route.id].reason : '';
                 
                 layer.addTo(this.map);
                 this.routeLayers.push(layer);
