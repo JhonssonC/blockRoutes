@@ -14,3 +14,9 @@ class BlockRoutesRoute(models.Model):
         required=True,
         help="Geometría del polígono en formato GeoJSON"
     )
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', 'El nombre de la ruta debe ser único.')
+    ]
+
+

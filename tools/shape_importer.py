@@ -319,8 +319,15 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
     sequence_points = []
     try:
         sf_seq = shapefile.Reader(secuencia_shp_path)
-        for sr in sf_seq.shapeRecords():
-            geom = sr.shape.__geo_interface__
+        for i in range(sf_seq.numRecords):
+            try:
+                shape = sf_seq.shape(i)
+                record = sf_seq.record(i)
+            except Exception as e:
+                _logger.warning("Error al leer la secuencia en el índice %s: %s. Se omite esta secuencia.", i, str(e))
+                continue
+
+            geom = shape.__geo_interface__
             coords = geom.get('coordinates')
             
             # Extraer punto [x, y]
@@ -346,7 +353,7 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                 # Ya está en WGS84, solo aplicamos calibración opcional
                 x, y = x + lon_offset, y + lat_offset
                 
-            rec = sr.record.as_dict()
+            rec = record.as_dict()
             cancod = str(rec.get('CANCOD', '')).strip()
             sicosec = str(rec.get('SICOSEC', '')).strip()
             sicorut = str(rec.get('SICORUT', '')).strip()
@@ -373,9 +380,15 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
     
     try:
         sf_route = shapefile.Reader(ruta_shp_path)
-        for sr in sf_route.shapeRecords():
-            geom = sr.shape.__geo_interface__
-            shape = sr.shape
+        for i in range(sf_route.numRecords):
+            try:
+                shape = sf_route.shape(i)
+                record = sf_route.record(i)
+            except Exception as e:
+                _logger.warning("Error al leer la ruta en el índice %s: %s. Se omite esta ruta.", i, str(e))
+                continue
+
+            geom = shape.__geo_interface__
             if not shape.points:
                 continue
                 
@@ -420,7 +433,7 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                     
             if not matched_route_id:
                 # Intentar resolver usando el mapeo estático desde Geoportal
-                rec = sr.record.as_dict()
+                rec = record.as_dict()
                 globalid = str(rec.get('GLOBALID', '')).strip()
                 if globalid and globalid in route_mapping:
                     matched_route_id = route_mapping[globalid]
@@ -445,6 +458,11 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                 })
             created_count += 1
             
+            # Flush e invalidate cache cada 20 registros para evitar consumo excesivo de memoria (OOM)
+            if created_count % 20 == 0:
+                env.flush_all()
+                env.invalidate_all()
+            
         # FASE 2: Importar rutas faltantes en vacíos (gaps) desde las geometrías autogeneradas
         gap_geoms_path = os.path.join(module_path, 'tools', 'gap_routes_geometries.json')
         if os.path.exists(gap_geoms_path):
@@ -462,6 +480,10 @@ def import_shapes_to_routes(env, directory_path='data/shapes/', business_unit=Fa
                             'business_unit': business_unit
                         })
                         gap_created += 1
+                        
+                        if gap_created % 20 == 0:
+                            env.flush_all()
+                            env.invalidate_all()
                 _logger.info("Se crearon %s nuevas rutas en vacíos (gaps) que no tenían polígono.", gap_created)
                 created_count += gap_created
             except Exception as e:
